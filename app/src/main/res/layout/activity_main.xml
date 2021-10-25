@@ -7,32 +7,30 @@
   <SurfaceView
     android:id="@+id/camera_preview_main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"/>
+    android:layout_height="match_parent" />
 
-  <Button
+  <ImageButton
     android:id="@+id/button_main_capture"
     android:layout_width="wrap_content"
-    android:layout_height="60dp"
+    android:layout_height="wrap_content"
     android:layout_gravity="bottom|center_horizontal"
     android:layout_marginBottom="30dp"
-    android:text="캡처" />
+    android:background="#00FFFFFF"
+    android:cropToPadding="true"
+    android:padding="0dp"
+    android:src="@mipmap/captures" />
 
-  <Button
+  <ImageButton
     android:id="@+id/button_main_gallery"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_width="60dp"
+    android:layout_height="60dp"
     android:layout_gravity="bottom|right"
-    android:layout_marginRight="20dp"
-    android:layout_marginBottom="20dp"
-    android:text="갤러리" />
-
-  <Button
-    android:id="@+id/button_main_option"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="bottom|left"
-    android:layout_marginLeft="20dp"
-    android:layout_marginBottom="20dp"
-    android:text="옵션" />
+    android:layout_marginRight="30dp"
+    android:layout_marginBottom="50dp"
+    android:background="#00FF0000"
+    android:cropToPadding="true"
+    android:padding="0dp"
+    android:scaleType="centerInside"
+    android:src="@drawable/gallery" />
 
 </FrameLayout>

@@ -51,35 +51,35 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultAdapter.ViewHolder
     items.set(position, item);
   }
 
-  static class ViewHolder extends RecyclerView.ViewHolder{
+  static class ViewHolder extends RecyclerView.ViewHolder {
     TextView textView1;
     TextView textView2;
-    TextView textView3;
     ImageView imageview;
+    String url;
 
-    public ViewHolder(View itemView){
+    public ViewHolder(View itemView) {
       super(itemView);
 
       textView1 = itemView.findViewById(R.id.name);
       textView2 = itemView.findViewById(R.id.low_price);
-      textView3 = itemView.findViewById(R.id.score);
       imageview = itemView.findViewById(R.id.thumbnail);
     }
 
-    public void setItem(SearchResult item){
-      textView1.setText(item.getName());
+    public void setItem(SearchResult item) {
+      textView1.setText(item.getCorrect_name());
       textView2.setText(item.getLow_price());
-      textView3.setText(item.getScore());
       imageview.setImageBitmap(item.getThumbnail());
+      url = item.getLink();
+      if (url != null) {
+        imageview.setOnClickListener(new View.OnClickListener() {
 
+          @Override
+          public void onClick(View v) {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            v.getContext().startActivity(intent);
+          }
+        });
+      }
     }
   }
-  /*public void webOn(SearchResult item){
-
-    Intent intent = new Intent(Intent.ACTION_VIEW);
-    Uri uri = Uri.parse("http://www.naver.com");
-    intent.setData(uri);
-    startActivity(intent);
-
-  }*/
 }

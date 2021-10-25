@@ -27,7 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
-//https://webnautes.tistory.com/822
+//https://webnautes.tistory.com/822참조
 // 카메라에서 가져온 영상을 보여주는 카메라 프리뷰 클래스
 class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
 

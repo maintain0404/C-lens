@@ -10,12 +10,11 @@ public class SearchResult {
   Bitmap thumbnail;
   String correct_name;
 
-  public SearchResult(String name, String low_price, String score, String link, Bitmap thumbnail, String correct_name) {
+  public SearchResult(String name, String low_price, String score, String link, String correct_name) {
     this.name = name;
     this.low_price = low_price;
     this.score = score;
     this.link = link;
-    this.thumbnail = thumbnail;
     this.correct_name = correct_name;
   }
 

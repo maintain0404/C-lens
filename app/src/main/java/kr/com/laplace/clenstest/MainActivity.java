@@ -3,7 +3,7 @@ package kr.com.laplace.clenstest;
 /*
  *  https://github.com/josnidhin/Android-Camera-Example에 있는 코드를 수정했습니다.
  */
-//https://webnautes.tistory.com/822
+//https://webnautes.tistory.com/82
 
 
 import android.Manifest;
@@ -14,19 +14,17 @@ import android.database.Cursor;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
-
-import java.io.File;
+import android.widget.ImageButton;
 
 
 public class MainActivity extends AppCompatActivity
@@ -75,7 +73,7 @@ public class MainActivity extends AppCompatActivity
     // 런타임 퍼미션 완료될때 까지 화면에서 보이지 않게 해야합니다.
     surfaceView.setVisibility(View.GONE);
 
-    Button capture = findViewById(R.id.button_main_capture);
+    ImageButton capture = findViewById(R.id.button_main_capture);
     capture.setOnClickListener(new View.OnClickListener() {
 
       @Override
@@ -84,7 +82,7 @@ public class MainActivity extends AppCompatActivity
       }
     });
 
-    Button gallery = findViewById(R.id.button_main_gallery);
+    ImageButton gallery = findViewById(R.id.button_main_gallery);
     gallery.setOnClickListener(new View.OnClickListener(){
 
       @Override
@@ -202,9 +200,10 @@ public class MainActivity extends AppCompatActivity
   }
 
   public void getImageResult(String imageUrl){
-    NetworkAsyncTask networkAsyncTask = new NetworkAsyncTask(this ,imageUrl);
-    networkAsyncTask.execute();
-
+    Intent intent = new Intent();
+    intent.setClass(this, ResultActivity.class);
+    intent.putExtra("imageUrl", imageUrl);
+    startActivity(intent);
   }
 
   @Override
@@ -214,13 +213,25 @@ public class MainActivity extends AppCompatActivity
 
       Uri selectedImageUri = data.getData();
       imageUrl = getPath(selectedImageUri);
-      NetworkAsyncTask networkAsyncTask = new NetworkAsyncTask(this, imageUrl);
-      networkAsyncTask.execute();
+      Log.d("imageUrlformUri", imageUrl);
+      Intent intent = new Intent();
+      intent.setClass(this, ResultActivity.class);
+      intent.putExtra("imageUrl", imageUrl);
+      startActivity(intent);
     }
   }
 
+  @Override
+  public void onBackPressed() {
+    moveTaskToBack(true);
+
+    finish();
+
+    android.os.Process.killProcess(android.os.Process.myPid());
+  }
+
   //실제 갤러리에서 가져온 이미지 결로 리턴
-  //https://trend21c.tistory.com/1468
+  //https://trend21c.tistory.com/1468 참조
   public String getPath(Uri uri) {
     String[] projection = {MediaStore.Images.Media.DATA};
     Cursor cursor = managedQuery(uri, projection, null, null, null);

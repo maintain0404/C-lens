@@ -3,32 +3,37 @@ package kr.com.laplace.clenstest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-public class NetworkAsyncTask extends AsyncTask<String, Void, String>{
-/*
- * Params - 비동기 작업시 필요한 데이터 자료형
- * 			ex)웹사이트에 데이터 요청시 전송할 파라미터값(ID,PW 등....)
- *
- * Progress - 비동기 방식의 요청이 진행될때 사용될 데이터 자료형.
- * 			  숫자형 자료형을 많이 사용한다.
- *
- * Result - 웹서버로부터 가져오게 될 데이터에 알맞는 자료형을 개발자가 결정
- * 			주로 JSON, XML등을 가져오게 되므로 String을 많이 사용한다.
- */
-  MainActivity context;
+import java.io.InputStream;
+import java.net.URL;
+
+
+public class NetworkAsyncTask extends AsyncTask<String, Void, String> {
+  /*
+   * Params - 비동기 작업시 필요한 데이터 자료형
+   *
+   * Progress - 비동기 방식의 요청이 진행될때 사용될 데이터 자료형.
+   *
+   * Result - 웹서버로부터 가져오게 될 데이터에 알맞는 자료형
+   */
+  ResultActivity context;
   ProgressDialog dialog;
   NetworkManager load;//접속과 요청을 담당하는 객체 선언
-
 
 
   String url;
 
   public NetworkAsyncTask(Context context, String url_get) {
-    this.context = (MainActivity)context;
+    this.context = (ResultActivity) context;
     load = new NetworkManager();
     url = url_get;
     Log.d("ImageUrl", url);
@@ -44,7 +49,7 @@ public class NetworkAsyncTask extends AsyncTask<String, Void, String>{
     dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
     dialog.setMessage("로딩중입니다..");
     dialog.setCancelable(false);
-    Log.d("Loading","lasdlkajsdf");
+    Log.d("Loading", "lasdlkajsdf");
 
     dialog.show();
 
@@ -63,91 +68,110 @@ public class NetworkAsyncTask extends AsyncTask<String, Void, String>{
   //백그라운드 메서드가 업무수행을 마칠때 호출되는 메서드.
   //UI쓰레드에 의해 호출되므로, UI쓰레드를 제어할 수 있다.
   //따라서 진행바를 그만 나오게 할 수 있다.
-  protected void onPostExecute(String data){
+  @Override
+  protected void onPostExecute(String data) {
     super.onPostExecute(data);
-    if(data == null){
-      Log.d("NullData","get null data");
+    if (data == null || data == "false") {
+      Log.d("NullData", "get null data");
       dialog.dismiss();
       Toast.makeText(context, "네트워크 오류를 정보를 받아오지 못했습니다.", Toast.LENGTH_LONG).show();
-      return;
-    }else if(data == "false"){
-      Toast.makeText(context, "네트워크 문제입니다. 다시 시도해주세요", Toast.LENGTH_LONG).show();
-    }else{
+      Intent intent = new Intent();
+      intent.setClass(this.context, MainActivity.class);
+    } else {
       Log.d("Data", data);
       //this.dialog.dismiss();
-
-      Intent intent = new Intent();
-      intent.setClass(context, ResultActivity.class);
-      //Intent intent = new Intent(this, ResultActivity.class); 로도 선언 가능
-      intent.putExtra("image", url);
-      intent.putExtra("data", data);
-      context.startActivity(intent);
+      parseJsonAndSet(data);
     }
     dialog.dismiss();
   }
 
-  /*protected void onPostExecute(String result) {
-    super.onPostExecute(result);
-    dialog.dismiss();
-    Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
+  public void parseJsonAndSet(String PrdDataJson) {
+    String name;
+    String low_price;
+    String score;
+    String link;
+    String prd_name;
+    String thumbnail_link;
+    JSONArray coordinates;
+    Bitmap thumbnail;
+    int[] coordinate = new int[]{0, 0, 0, 0};
 
-    System.out.println("a");
-
-    //최종적으로 웹서버로부터 데이터를 완전히 가져온 시점은 이 메서드
-    ArrayList<DataVo> dataList = context.adapter.lst;
-
-    dataList.removeAll(dataList);
-
+    Log.d("ItemAdd", "start");
     try {
-      JSONObject o = new JSONObject(result);
-      //JSONArray array = new JSONArray(result);
-      JSONArray array = o.getJSONArray("a");
-
-      DataVo dataVo = null;
-
-      JSONObject obj = null;
-
-      System.out.println("1");
-
-      for(int i=0;i<array.length();i++){
-
-        obj = array.getJSONObject(i);
-
-        dataVo = new DataVo();
-
-
-
-        System.out.println("2obj.getString(name):"+obj.getString("name"));
-
-        dataVo.setName(obj.getString("name"));
-
-        dataVo.setAge(obj.getInt("age"));
-
-        dataVo.setIsBool(obj.getString("isBool"));
-
-
-
-        dataList.add(dataVo);
-
-
-
-        context.listView.invalidateViews();
-
+      JSONArray jarray = new JSONObject(PrdDataJson).getJSONArray("products");
+      if(jarray.length() == 0){
+        Toast.makeText(this.context, "검색 결과가 없습니다.", Toast.LENGTH_LONG).show();
+        Intent intent = new Intent();
+        intent.setClass(this.context, MainActivity.class);
+        this.context.startActivity(intent);
       }
+      for (int i = 0; i < jarray.length(); i++) {
+        Log.d("ItemAdd", Integer.toString(i));
+        JSONObject jObject = jarray.getJSONObject(i);
 
-      System.out.println("3");
+        name = jObject.optString("search_word");
+        low_price = jObject.optString("low_price");
+        score = jObject.optString("score");
+        link = jObject.optString("link");
+        thumbnail_link = jObject.optString("thumbnail");
+        prd_name = jObject.optString("product_name");
+        coordinates = jObject.getJSONArray("coordinate");
+        for (int j = 0; j < coordinates.length(); j++) {
+          coordinate[j] = coordinates.getInt(j);
+        }
 
-      context.listView.invalidate();
-
-
-
-      System.out.println("array.length():"+array.length());
-
+        if (score == "null") {
+          score = "";
+        }
+        if (low_price == "null") {
+          continue;
+        }
+        if (prd_name.length() > 23){
+          prd_name = prd_name.substring(0, 22) + "...";
+        }
+        thumbnailASync async = new thumbnailASync(thumbnail_link, new SearchResult(name, low_price, score, link, prd_name));
+        async.execute();
+      }
     } catch (JSONException e) {
-
       e.printStackTrace();
-
     }
-  }*/
+    Log.d("ItemAdd", "end");
+  }
+
+  public class thumbnailASync extends AsyncTask<String, Bitmap, Bitmap>{
+    String url;
+    SearchResult res;
+
+    public thumbnailASync(String Url, SearchResult res){
+      this.url = Url;
+      this.res = res;
+    }
+
+    @Override
+    protected void onPreExecute() {
+      super.onPreExecute();
+    }
+
+    @Override
+    protected Bitmap doInBackground(String... strings) {
+      Bitmap thumbnail;
+      try{
+        thumbnail = BitmapFactory.decodeStream((InputStream) new URL(url).getContent());
+      } catch(Exception e){
+        e.printStackTrace();
+        return null;
+      }
+      return thumbnail;
+    }
+
+    @Override
+    protected void onPostExecute(Bitmap bitmap) {
+      super.onPostExecute(bitmap);
+      if(bitmap != null){
+        res.setThummbnail(bitmap);
+      }
+      context.adapter.addItem(res);
+      context.adapter.notifyDataSetChanged();
+    }
+  }
 }
-// [현's 블로그]출처: https://hyunssssss.tistory.com/305

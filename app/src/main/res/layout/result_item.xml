@@ -10,24 +10,28 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:cardBackgroundColor="#FFFFFFFF"
-    app:cardCornerRadius="10dp"
     >
 
     <LinearLayout
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:orientation="horizontal">
+      android:layout_height="126dp"
+      android:layout_marginBottom="3sp"
+      android:orientation="horizontal"
+      android:paddingBottom="2dp">
 
       <ImageView
         android:id="@+id/thumbnail"
-        android:layout_width="88dp"
-        android:layout_height="88dp"
-        android:padding="5dp"
+        android:layout_width="111dp"
+        android:layout_height="103dp"
+        android:layout_gravity="center_vertical"
+        android:background="#00000000"
+        android:padding="1dp"
         tools:srcCompat="@mipmap/ic_launcher" />
 
       <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:layout_margin="5dp"
         android:layout_weight="1"
         android:gravity="center_vertical"
@@ -42,10 +46,10 @@
             android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="이름"
             android:fontFamily="@font/godo_b"
+            android:text="이름"
             android:textColor="#023373"
-            android:textSize="25sp" />
+            android:textSize="20sp" />
         </LinearLayout>
 
         <TextView
@@ -58,16 +62,6 @@
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:orientation="horizontal">
-
-          <TextView
-            android:id="@+id/score"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="left|fill_vertical"
-            android:fontFamily="@font/godo_b"
-            android:gravity="left|center_vertical"
-            android:text="평점"
-            android:textSize="20sp" />
 
           <TextView
             android:id="@+id/textView2"
@@ -85,7 +79,7 @@
             android:fontFamily="@font/godo_b"
             android:gravity="right|center_vertical"
             android:text="최저가"
-            android:textSize="20sp" />
+            android:textSize="18sp" />
         </LinearLayout>
 
       </LinearLayout>
